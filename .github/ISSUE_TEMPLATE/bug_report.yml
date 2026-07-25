@@ -1,0 +1,35 @@
+name: Bug report
+description: Something is broken or behaves unexpectedly
+labels: [bug]
+body:
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened
+      description: What went wrong, and what did you expect instead
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Open youtube.com
+        2. Click the toolbar icon
+        3. ...
+    validations:
+      required: true
+  - type: input
+    id: browser
+    attributes:
+      label: Browser and version
+      placeholder: Chrome 150
+    validations:
+      required: true
+  - type: textarea
+    id: console
+    attributes:
+      label: Console errors
+      description: Any errors from the page console or the extension service worker
+    validations:
+      required: false
