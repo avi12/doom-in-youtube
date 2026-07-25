@@ -20,13 +20,14 @@
     "object-shorthand": ["error", "always", { "avoidExplicitReturnArrows": true }],
     "id-length": ["error", {
       "min": 3,
-      "exceptions": ["z", "_", "i", "id", "e", "x", "y", "d", "w", "h", "to", "on", "up", "ok"],
+      "exceptions": ["z", "_", "i", "id", "e", "x", "y", "d", "w", "h", "to", "on", "up", "ok", "T", "K", "V", "R", "n", "a", "s", "m", "t", "q", "js", "fs", "os"],
       "properties": "never"
     }],
     "func-style": ["error", "declaration", { "allowArrowFunctions": false }],
     "arrow-body-style": ["error", "as-needed"],
     "no-control-regex": "off",
     "typescript/no-explicit-any": "error",
+    "typescript/no-useless-default-assignment": "off",
     "typescript/ban-ts-comment": "error",
     "typescript/no-floating-promises": "error",
     "typescript/unbound-method": "off",
