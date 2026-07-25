@@ -1,6 +1,15 @@
-import { FrameMessage, onStageRect, sendFrameMessage, StageRect } from "@/lib/frame-messaging";
+import { syncClipRects } from "@/lib/clip";
+import {
+  FrameMessage,
+  onStageState,
+  sendFrameMessage,
+  StageRect,
+  StageState
+} from "@/lib/frame-messaging";
 
 const PARENT_ORIGIN = "https://www.youtube.com";
+const SVG_NS = "http://www.w3.org/2000/svg";
+const STAGE_CLIP_ID = "doom-stage-peepholes";
 
 function bootDoom() {
   const elStage = document.querySelector<HTMLElement>("#stage");
@@ -8,12 +17,20 @@ function bootDoom() {
     return;
   }
 
-  onStageRect({
+  const elClipPath = createStageClip(elStage);
+
+  onStageState({
     allowedOrigin: PARENT_ORIGIN,
-    handler: rect => applyStageRect({
-      elStage,
-      rect
-    })
+    handler(state) {
+      applyStageRect({
+        elStage,
+        rect: state.rect
+      });
+      syncStageClip({
+        elClipPath,
+        state
+      });
+    }
   });
 
   Dos(elStage, {
@@ -40,6 +57,40 @@ function applyStageRect({ elStage, rect }: {
   elStage.style.top = `${rect.top}px`;
   elStage.style.width = `${rect.width}px`;
   elStage.style.height = `${rect.height}px`;
+}
+
+// the WebGL canvas is its own compositor layer and slips past the parent iframe's clip-path in the
+// gutters between thumbnails; clipping #stage from inside its own document clips that layer directly
+function createStageClip(elStage: HTMLElement) {
+  const elSvg = document.createElementNS(SVG_NS, "svg");
+  elSvg.style.position = "fixed";
+  elSvg.style.width = "0";
+  elSvg.style.height = "0";
+
+  const elClipPath = document.createElementNS(SVG_NS, "clipPath");
+  elClipPath.id = STAGE_CLIP_ID;
+  elClipPath.setAttribute("clipPathUnits", "userSpaceOnUse");
+  elSvg.append(elClipPath);
+  document.body.append(elSvg);
+
+  elStage.style.clipPath = `url(#${STAGE_CLIP_ID})`;
+  return elClipPath;
+}
+
+// the peepholes arrive in the parent's viewport coordinates; #stage's clip runs in its own user
+// space, so shift each rect by #stage's top-left before mirroring them onto the clipPath
+function syncStageClip({ elClipPath, state }: {
+  elClipPath: SVGClipPathElement;
+  state: StageState;
+}) {
+  syncClipRects({
+    elClipPath,
+    rects: state.peepholes.map(peephole => ({
+      ...peephole,
+      x: peephole.x - state.rect.left,
+      y: peephole.y - state.rect.top
+    }))
+  });
 }
 
 function notifyReady() {

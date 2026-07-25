@@ -1,3 +1,4 @@
+import { StagePeephole } from "@/lib/frame-messaging";
 import { TilePeephole } from "@/lib/tiles";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
@@ -14,19 +15,16 @@ export function createClip() {
   document.body.append(elSvg);
 
   function update(peepholes: TilePeephole[]) {
-    syncRectCount({
+    syncClipRects({
       elClipPath,
-      count: peepholes.length
+      rects: peepholes.map(({ rect, radius }) => ({
+        x: rect.left,
+        y: rect.top,
+        width: rect.width,
+        height: rect.height,
+        radius
+      }))
     });
-
-    const elRects = elClipPath.children;
-
-    for (let i = 0; i < peepholes.length; i++) {
-      applyRect({
-        elRect: elRects[i],
-        peephole: peepholes[i]
-      });
-    }
   }
 
   function destroy() {
@@ -39,32 +37,41 @@ export function createClip() {
   };
 }
 
-function syncRectCount({ elClipPath, count }: {
+// Shared by the page overlay and the in-frame stage clip: mirror `rects` onto the clipPath's
+// child <rect>s, growing or shrinking the pool to match.
+export function syncClipRects({ elClipPath, rects }: {
   elClipPath: SVGClipPathElement;
-  count: number;
+  rects: StagePeephole[];
 }) {
-  while (elClipPath.childElementCount < count) {
+  while (elClipPath.childElementCount < rects.length) {
     elClipPath.append(document.createElementNS(SVG_NS, "rect"));
   }
 
-  while (elClipPath.childElementCount > count) {
+  while (elClipPath.childElementCount > rects.length) {
     elClipPath.lastElementChild?.remove();
+  }
+
+  const elRects = elClipPath.children;
+  for (let i = 0; i < rects.length; i++) {
+    applyRect({
+      elRect: elRects[i],
+      rect: rects[i]
+    });
   }
 }
 
-function applyRect({ elRect, peephole }: {
+function applyRect({ elRect, rect }: {
   elRect: Element | undefined;
-  peephole: TilePeephole | undefined;
+  rect: StagePeephole | undefined;
 }) {
-  if (!elRect || !peephole) {
+  if (!elRect || !rect) {
     return;
   }
 
-  const { rect, radius } = peephole;
-  elRect.setAttribute("x", `${rect.left}`);
-  elRect.setAttribute("y", `${rect.top}`);
+  elRect.setAttribute("x", `${rect.x}`);
+  elRect.setAttribute("y", `${rect.y}`);
   elRect.setAttribute("width", `${rect.width}`);
   elRect.setAttribute("height", `${rect.height}`);
-  elRect.setAttribute("rx", `${radius}`);
-  elRect.setAttribute("ry", `${radius}`);
+  elRect.setAttribute("rx", `${rect.radius}`);
+  elRect.setAttribute("ry", `${rect.radius}`);
 }

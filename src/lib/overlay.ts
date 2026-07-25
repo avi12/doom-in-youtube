@@ -1,13 +1,7 @@
 import { createClip } from "@/lib/clip";
-import {
-  FrameMessage,
-  onFrameMessage,
-  removeAllFrameListeners,
-  sendStageRect,
-  StageRect
-} from "@/lib/frame-messaging";
+import { FrameMessage, onFrameMessage, removeAllFrameListeners, sendStageState } from "@/lib/frame-messaging";
 import "@/lib/overlay.css";
-import { collectDoomProjection } from "@/lib/tiles";
+import { collectDoomProjection, DoomProjection } from "@/lib/tiles";
 
 const FRAME_PATH = "doom.html";
 const ROOT_ACTIVE_CLASS = "doom-active";
@@ -17,7 +11,6 @@ export function createOverlay() {
   let isOn = false;
   let rafId = 0;
   let clip: ReturnType<typeof createClip> | null = null;
-  let lastStageRect: StageRect | null = null;
   const elFrame = buildFrame();
 
   function enable() {
@@ -31,9 +24,6 @@ export function createOverlay() {
     document.body.append(elFrame);
     onFrameMessage(FrameMessage.DoomReady, () => {
       elFrame.classList.add("is-ready");
-      // the frame only starts listening for stage rects once its script boots, so the initial
-      // send can arrive before anyone is listening; clear the cache to force a fresh send now
-      lastStageRect = null;
     });
     tick();
   }
@@ -51,7 +41,6 @@ export function createOverlay() {
     elFrame.remove();
     clip?.destroy();
     clip = null;
-    lastStageRect = null;
   }
 
   function toggle() {
@@ -67,37 +56,35 @@ export function createOverlay() {
   function tick() {
     const projection = collectDoomProjection();
     clip?.update(projection?.peepholes ?? []);
-    syncStageRect(projection?.frame ?? null);
+    syncStage(projection);
     rafId = requestAnimationFrame(tick);
   }
 
-  function syncStageRect(rect: StageRect | null) {
+  // stream the frame rect plus the peepholes so the frame can position #stage and re-clip its
+  // canvas from the inside; the peepholes shift every frame on scroll, so this fires each tick
+  function syncStage(projection: DoomProjection | null) {
     const targetWindow = elFrame.contentWindow;
-    if (!rect || !targetWindow) {
+    if (!projection || !targetWindow) {
       return;
     }
 
-    if (isSameStageRect(lastStageRect, rect)) {
-      return;
-    }
-
-    lastStageRect = rect;
-    sendStageRect({
-      rect,
+    sendStageState({
+      state: {
+        rect: projection.frame,
+        peepholes: projection.peepholes.map(({ rect, radius }) => ({
+          x: rect.left,
+          y: rect.top,
+          width: rect.width,
+          height: rect.height,
+          radius
+        }))
+      },
       targetWindow,
       targetOrigin: FRAME_ORIGIN
     });
   }
 
   return { toggle };
-}
-
-function isSameStageRect(prev: StageRect | null, next: StageRect) {
-  return prev !== null
-    && prev.left === next.left
-    && prev.top === next.top
-    && prev.width === next.width
-    && prev.height === next.height;
 }
 
 function buildFrame() {
