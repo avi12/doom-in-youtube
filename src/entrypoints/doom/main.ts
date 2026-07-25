@@ -1,4 +1,4 @@
-import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/messaging";
+import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/frame-messaging";
 
 const EMULATOR_PATH_PREFIX = "/vendor/emulators/";
 const DOOM_BUNDLE_URL = "/assets/doom.jsdos";

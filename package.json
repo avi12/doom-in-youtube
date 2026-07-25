@@ -57,5 +57,8 @@
       "eslint --fix"
     ]
   },
-  "packageManager": "pnpm@11.1.2"
+  "packageManager": "pnpm@11.1.2",
+  "dependencies": {
+    "@webext-core/messaging": "^3.0.2"
+  }
 }

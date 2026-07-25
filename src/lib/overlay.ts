@@ -1,5 +1,5 @@
 import { createClip } from "@/lib/clip";
-import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/messaging";
+import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/frame-messaging";
 import "@/lib/overlay.css";
 import { collectVisibleTileRects } from "@/lib/tiles";
 

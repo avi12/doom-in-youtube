@@ -19,10 +19,12 @@ governs its WASM. A background service worker toggles it on the action click and
 - No Svelte, no backend, no Firebase - this is DOM + canvas only
 
 # Dependencies
-- Minimize supply-chain attack surface: prefer implementing small utilities yourself over pulling
-  a trivial npm package. Runtime dependencies stay at ZERO - the only third-party runtime code is
-  the vendored js-dos, committed and reviewable under `src/public/vendor`. devDependencies are
-  limited to the build/lint toolchain (wxt, oxlint, eslint, fallow)
+- Minimize supply-chain attack surface: MINIMIZE dependencies, do not forbid them. For a trivial
+  utility that a few lines of code can replace, implement it yourself instead of pulling a package.
+  For a real, non-trivial concern (e.g. typed cross-context messaging via `@webext-core/messaging`),
+  a well-scoped dependency is fine
+- Vendored js-dos is committed and reviewable under `src/public/vendor`. devDependencies are the
+  build/lint toolchain (wxt, oxlint, eslint, fallow, tsgo)
 - Never add a dependency for something a few lines of code can do
 
 # Code style

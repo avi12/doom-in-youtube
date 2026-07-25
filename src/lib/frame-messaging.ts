@@ -1,8 +1,4 @@
-export const DOOM_FRAME_ID = "doom-in-youtube-frame";
-
-export const TOGGLE_ACTION = "doom-in-youtube:toggle";
-
-export const TOGGLE_EVENT = "doom-in-youtube:toggle";
+const DOOM_FRAME_ID = "doom-in-youtube-frame";
 
 export enum FrameMessage {
   Ready = "doom:ready",
@@ -10,7 +6,7 @@ export enum FrameMessage {
   Released = "doom:released"
 }
 
-export interface FrameEnvelope {
+interface FrameEnvelope {
   source: typeof DOOM_FRAME_ID;
   message: FrameMessage;
 }
