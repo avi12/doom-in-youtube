@@ -28,4 +28,18 @@
   :is(ytd-video-preview, #mouseover-overlay, ytd-moving-thumbnail-renderer) {
     display: none !important;
   }
+
+  /* the peephole clip is repainted each frame, but the browser scrolls the page on the compositor
+     a frame ahead, so during a scroll the real thumbnail behind the frame flashes through before
+     the clip catches up; hide the thumbnail images so there is nothing to flash - the peephole
+     containers still lay out, so the projection keeps tracking their rects */
+  :is(yt-thumbnail-view-model, ytd-thumbnail, .ytThumbnailViewModelHost) :is(img, yt-image) {
+    visibility: hidden !important;
+  }
+
+  /* the duration badge and other thumbnail overlays sit on top of the image - hide them too so
+     nothing but the game shows through the peepholes */
+  :is(.ytThumbnailBottomOverlayViewModelHost, ytd-thumbnail-overlay-time-status-renderer, yt-thumbnail-overlay-badge-view-model) {
+    display: none !important;
+  }
 }
