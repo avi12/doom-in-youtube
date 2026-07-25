@@ -6,6 +6,7 @@
     <title>DOOM</title>
     <link rel="stylesheet" href="/vendor/js-dos.css" />
     <script src="/vendor/js-dos.js"></script>
+    <meta name="color-scheme" content="light dark" />
     <style>
       html,
       body {
@@ -20,17 +21,13 @@
         position: fixed;
         inset: 0;
 
-        /* force the js-dos DOOM canvas to fill the whole surface so every
-           thumbnail peephole lands on game pixels, never letterbox black */
-        & canvas,
-        & .dosbox-container,
-        & .dosbox-container > div {
+        /* the parent sizes #stage to an exact 4:3 rect, so stretch the DOOM canvas to fill it
+           (the 320x200 buffer -> 4:3 is the game's authentic pixel-aspect correction) */
+        & canvas {
           position: absolute !important;
           inset: 0 !important;
           width: 100% !important;
           height: 100% !important;
-          max-width: none !important;
-          max-height: none !important;
           object-fit: fill !important;
           image-rendering: pixelated;
         }

@@ -1,36 +1,60 @@
-const DOOM_FRAME_ID = "doom-in-youtube-frame";
+import { defineWindowMessaging } from "@webext-core/messaging/page";
 
-export enum FrameMessage {
-  Ready = "doom:ready",
-  Deactivate = "doom:deactivate",
-  Released = "doom:released"
+export const FrameMessage = {
+  DoomReady: "doomReady"
+} as const;
+
+interface FrameProtocol {
+  doomReady(): void;
 }
 
-interface FrameEnvelope {
-  source: typeof DOOM_FRAME_ID;
-  message: FrameMessage;
+const FRAME_NAMESPACE = "doom-in-youtube-frame";
+
+export const {
+  sendMessage: sendFrameMessage,
+  onMessage: onFrameMessage,
+  removeAllListeners: removeAllFrameListeners
+} = defineWindowMessaging<FrameProtocol>({
+  namespace: FRAME_NAMESPACE
+});
+
+// where the DOOM frame should sit, in the parent's viewport coordinates
+export interface StageRect {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
-export function postToFrame({ target, message }: {
-  target: Window;
-  message: FrameMessage;
+// the stage rect streams on every layout change (scroll, resize, thumbnail load), so it
+// rides a raw one-way postMessage channel instead of the request/response messaging above,
+// which would leak an unanswered response listener per send across the frame boundary
+const STAGE_RECT_TYPE = "doom-in-youtube:stage-rect";
+
+export function sendStageRect({ rect, targetWindow, targetOrigin }: {
+  rect: StageRect;
+  targetWindow: Window;
+  targetOrigin: string;
 }) {
-  const envelope: FrameEnvelope = {
-    source: DOOM_FRAME_ID,
-    message
-  };
-  target.postMessage(envelope, "*");
+  targetWindow.postMessage({
+    type: STAGE_RECT_TYPE,
+    rect
+  }, targetOrigin);
 }
 
-export function readFrameMessage(e: MessageEvent): FrameMessage | null {
-  const data: unknown = e.data;
-  if (!isFrameEnvelope(data)) {
-    return null;
+export function onStageRect({ handler, allowedOrigin }: {
+  handler: (rect: StageRect) => void;
+  allowedOrigin: string;
+}) {
+  function listener(e: MessageEvent) {
+    const isStageRect = e.origin === allowedOrigin && e.data?.type === STAGE_RECT_TYPE;
+    if (!isStageRect) {
+      return;
+    }
+
+    handler(e.data.rect);
   }
 
-  return data.message;
-}
-
-function isFrameEnvelope(data: unknown): data is FrameEnvelope {
-  return typeof data === "object" && data !== null && "source" in data && data.source === DOOM_FRAME_ID;
+  addEventListener("message", listener);
+  return () => removeEventListener("message", listener);
 }

@@ -1,8 +1,6 @@
-import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/frame-messaging";
+import { FrameMessage, onStageRect, sendFrameMessage, StageRect } from "@/lib/frame-messaging";
 
-const EMULATOR_PATH_PREFIX = "/vendor/emulators/";
-const DOOM_BUNDLE_URL = "/assets/doom.jsdos";
-const DEFAULT_VOLUME = 0.6;
+const PARENT_ORIGIN = "https://www.youtube.com";
 
 function bootDoom() {
   const elStage = document.querySelector<HTMLElement>("#stage");
@@ -10,46 +8,46 @@ function bootDoom() {
     return;
   }
 
+  onStageRect({
+    allowedOrigin: PARENT_ORIGIN,
+    handler: rect => applyStageRect({
+      elStage,
+      rect
+    })
+  });
+
   Dos(elStage, {
-    url: DOOM_BUNDLE_URL,
-    pathPrefix: EMULATOR_PATH_PREFIX,
+    url: "/assets/doom.jsdos",
+    pathPrefix: "/vendor/emulators/",
     kiosk: true,
     autoStart: true,
     mouseCapture: true,
     noCloud: true,
-    volume: DEFAULT_VOLUME
+    volume: 0.6
   });
 
-  wireParentBridge();
   notifyReady();
 }
 
-function wireParentBridge() {
-  addEventListener("message", e => {
-    const message = readFrameMessage(e);
-    if (message === FrameMessage.Deactivate && document.pointerLockElement) {
-      document.exitPointerLock();
-    }
-  });
-
-  document.addEventListener("pointerlockchange", () => {
-    if (!document.pointerLockElement) {
-      postToParent(FrameMessage.Released);
-    }
-  });
+// the parent hands us an already 4:3-fitted rect (in its viewport coords); map #stage onto it and
+// let CSS stretch the DOOM canvas to fill it, so the frame's edges line up with the thumbnail box
+function applyStageRect({ elStage, rect }: {
+  elStage: HTMLElement;
+  rect: StageRect;
+}) {
+  elStage.style.inset = "auto";
+  elStage.style.left = `${rect.left}px`;
+  elStage.style.top = `${rect.top}px`;
+  elStage.style.width = `${rect.width}px`;
+  elStage.style.height = `${rect.height}px`;
 }
 
 function notifyReady() {
-  postToParent(FrameMessage.Ready);
-}
-
-function postToParent(message: FrameMessage) {
-  if (parent !== self) {
-    postToFrame({
-      target: parent,
-      message
-    });
+  if (parent === self) {
+    return;
   }
+
+  void sendFrameMessage(FrameMessage.DoomReady, undefined, PARENT_ORIGIN, parent);
 }
 
 bootDoom();
