@@ -1,0 +1,61 @@
+{
+  "name": "doom-in-youtube",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Click the icon and every YouTube thumbnail becomes a peephole onto one live DOOM",
+  "author": "Avi <avi6106@gmail.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/avi12/doom-in-youtube#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/avi12/doom-in-youtube.git"
+  },
+  "bugs": {
+    "url": "https://github.com/avi12/doom-in-youtube/issues"
+  },
+  "keywords": [
+    "doom",
+    "youtube",
+    "chrome-extension",
+    "wxt",
+    "js-dos",
+    "manifest-v3"
+  ],
+  "imports": {
+    "#imports": "./.wxt/types/imports-module.d.ts"
+  },
+  "scripts": {
+    "ext:dev": "wxt",
+    "ext:dev:edge": "wxt -b edge",
+    "ext:build": "wxt build",
+    "ext:zip": "wxt zip",
+    "lint": "oxlint --type-aware --fix && eslint --fix",
+    "fallow": "fallow audit --base HEAD",
+    "check": "tsgo --noEmit",
+    "postinstall": "wxt prepare"
+  },
+  "devDependencies": {
+    "@stylistic/eslint-plugin": "^5.10.0",
+    "@types/chrome": "^0.2.2",
+    "@types/node": "^26.1.0",
+    "@typescript/native-preview": "7.0.0-dev.20260707.2",
+    "eslint": "^10.6.0",
+    "eslint-plugin-import-newlines": "^2.0.0",
+    "eslint-plugin-perfectionist": "^5.9.1",
+    "fallow": "2.103.0",
+    "globals": "^17.7.0",
+    "oxlint": "1.72.0",
+    "oxlint-tsgolint": "0.24.0",
+    "typescript": "6.0.3",
+    "typescript-eslint": "^8.62.1",
+    "web-ext-run": "^0.2.4",
+    "wxt": "^0.20.27"
+  },
+  "lint-staged": {
+    "*.ts": [
+      "oxlint --fix",
+      "eslint --fix"
+    ]
+  },
+  "packageManager": "pnpm@11.1.2"
+}

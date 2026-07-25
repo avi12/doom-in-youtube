@@ -1,0 +1,16 @@
+{
+  "mcpServers": {
+    "chrome-devtools-mcp": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "bunx", "chrome-devtools-mcp@latest", "--browser-url=http://localhost:9333"],
+      "env": {}
+    },
+    "edge-devtools-mcp": {
+      "type": "stdio",
+      "command": "cmd",
+      "args": ["/c", "bunx", "chrome-devtools-mcp@latest", "--browser-url=http://localhost:9334"],
+      "env": {}
+    }
+  }
+}

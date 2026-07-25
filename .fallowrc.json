@@ -1,0 +1,8 @@
+{
+  "$schema": "https://raw.githubusercontent.com/getfallow/fallow/main/schema/fallowrc.json",
+  "entry": ["src/entrypoints/background.ts", "src/entrypoints/youtube.content.ts", "src/entrypoints/doom/main.ts"],
+  "health": {
+    "maxCognitive": 30,
+    "maxCrap": 10000
+  }
+}
