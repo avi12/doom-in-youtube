@@ -9,7 +9,7 @@ export default defineConfig({
     action: {
       default_title: "Play DOOM through the thumbnails"
     },
-    permissions: ["activeTab"],
+    permissions: ["activeTab", "scripting"],
     host_permissions: ["https://www.youtube.com/*"],
     web_accessible_resources: [
       {

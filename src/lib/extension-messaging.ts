@@ -1,9 +1,11 @@
 import { defineExtensionMessaging } from "@webext-core/messaging";
 
-export const TOGGLE_EVENT = "doom-in-youtube:toggle";
+export const ExtensionMessage = {
+  ToggleDoom: "toggleDoom"
+} as const;
 
-interface ToggleProtocol {
+interface ExtensionProtocol {
   toggleDoom(): void;
 }
 
-export const { sendMessage, onMessage } = defineExtensionMessaging<ToggleProtocol>();
+export const { sendMessage, onMessage } = defineExtensionMessaging<ExtensionProtocol>();
