@@ -79,9 +79,12 @@ governs its WASM. A background service worker toggles it on the action click and
 - Informal tone
 
 # Linting
-After each modification, lint with oxlint then ESLint:
+After completing a bug fix, feature, or refactor, run the full linter suite - never skip one:
 - `pnpm lint` runs `oxlint --type-aware --fix && eslint --fix` - oxlint owns logic/type-aware
   rules, ESLint owns the stylistic ones; always run with `--fix`
+- `pnpm stylelint` runs `stylelint "**/*.css" --fix` for any CSS change - config extends
+  `stylelint-config-ccb` (shared with youtube-time-manager), pinned deps in devDependencies
+- `pnpm check` runs `tsgo --noEmit` for 100% type safety
 - After every feature/refactor run a `pnpm fallow` dead-code audit (= `fallow audit --base HEAD`)
   and clean up newly orphaned imports/helpers/exports/files by hand. Never `pnpx fallow fix`.
   fallow is PINNED to 2.103.0 - always the local bin, never `pnpx`/`pnpm dlx`

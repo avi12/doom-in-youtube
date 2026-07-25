@@ -30,6 +30,7 @@
     "ext:build": "wxt build",
     "ext:zip": "wxt zip",
     "lint": "oxlint --type-aware --fix && eslint --fix",
+    "stylelint": "stylelint \"**/*.css\" --fix",
     "fallow": "fallow audit --base HEAD",
     "check": "tsgo --noEmit",
     "postinstall": "wxt prepare"
@@ -46,6 +47,8 @@
     "globals": "^17.7.0",
     "oxlint": "1.72.0",
     "oxlint-tsgolint": "0.24.0",
+    "stylelint": "^17.14.1",
+    "stylelint-config-ccb": "^3.32.0",
     "typescript": "6.0.3",
     "typescript-eslint": "^8.62.1",
     "web-ext-run": "^0.2.4",
@@ -55,6 +58,9 @@
     "*.ts": [
       "oxlint --fix",
       "eslint --fix"
+    ],
+    "*.css": [
+      "stylelint --fix"
     ]
   },
   "packageManager": "pnpm@11.1.2",
