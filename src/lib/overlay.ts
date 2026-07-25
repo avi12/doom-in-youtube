@@ -31,9 +31,7 @@ export function createOverlay() {
     document.documentElement.classList.add(ROOT_ACTIVE_CLASS);
     clip = createClip();
     document.body.append(elFrame);
-    addEventListener("message", onFrameMessage);
-    document.addEventListener("pointerdown", onCapturePointerDown, true);
-    document.addEventListener("click", onCaptureClick, true);
+    bindListeners(true);
     tick();
   }
 
@@ -45,14 +43,44 @@ export function createOverlay() {
     isOn = false;
     deactivate();
     cancelAnimationFrame(rafId);
-    removeEventListener("message", onFrameMessage);
-    document.removeEventListener("pointerdown", onCapturePointerDown, true);
-    document.removeEventListener("click", onCaptureClick, true);
+    bindListeners(false);
     document.documentElement.classList.remove(ROOT_ACTIVE_CLASS);
     elFrame.classList.remove("is-ready");
     elFrame.remove();
     clip?.destroy();
     clip = null;
+  }
+
+  function toggleCapture<EventName extends keyof DocumentEventMap>({ type, handler, isBinding }: {
+    type: EventName;
+    handler: (event: DocumentEventMap[EventName]) => void;
+    isBinding: boolean;
+  }) {
+    if (isBinding) {
+      document.addEventListener(type, handler, true);
+      return;
+    }
+
+    document.removeEventListener(type, handler, true);
+  }
+
+  function bindListeners(isBinding: boolean) {
+    if (isBinding) {
+      addEventListener("message", onFrameMessage);
+    } else {
+      removeEventListener("message", onFrameMessage);
+    }
+
+    toggleCapture({
+      type: "pointerdown",
+      handler: onCapturePointerDown,
+      isBinding
+    });
+    toggleCapture({
+      type: "click",
+      handler: onCaptureClick,
+      isBinding
+    });
   }
 
   function toggle() {
