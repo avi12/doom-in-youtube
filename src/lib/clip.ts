@@ -27,7 +27,14 @@ export function createClip() {
     }
   }
 
-  return { update };
+  function destroy() {
+    elSvg.remove();
+  }
+
+  return {
+    update,
+    destroy
+  };
 }
 
 function syncRectCount({ elClipPath, count }: {

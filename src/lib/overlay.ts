@@ -19,7 +19,7 @@ export function createOverlay() {
   let rafId = 0;
   let latestRects: DOMRect[] = [];
 
-  const clip = createClip();
+  let clip: ReturnType<typeof createClip> | null = null;
   const elFrame = buildFrame();
 
   function enable() {
@@ -29,6 +29,7 @@ export function createOverlay() {
 
     isOn = true;
     document.documentElement.classList.add(ROOT_ACTIVE_CLASS);
+    clip = createClip();
     document.body.append(elFrame);
     addEventListener("message", onFrameMessage);
     document.addEventListener("pointerdown", onCapturePointerDown, true);
@@ -50,7 +51,8 @@ export function createOverlay() {
     document.documentElement.classList.remove(ROOT_ACTIVE_CLASS);
     elFrame.classList.remove("is-ready");
     elFrame.remove();
-    clip.update([]);
+    clip?.destroy();
+    clip = null;
   }
 
   function toggle() {
@@ -68,14 +70,14 @@ export function createOverlay() {
     const bounds = computeBounds(latestRects);
     if (bounds) {
       positionFrame(bounds);
-      clip.update(
+      clip?.update(
         toFrameLocalRects({
           rects: latestRects,
           bounds
         })
       );
     } else {
-      clip.update([]);
+      clip?.update([]);
     }
 
     rafId = requestAnimationFrame(tick);
