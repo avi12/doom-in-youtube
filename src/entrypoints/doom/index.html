@@ -32,6 +32,12 @@
           image-rendering: pixelated;
         }
       }
+
+      /* js-dos overlays its on-screen touch controls and settings sidebar on top of the canvas;
+         they are useless here and their white graphics bleed through the thumbnail peepholes */
+      main.jsdos-rso :is(.sidebar-slider, .touch) {
+        display: none !important;
+      }
     </style>
   </head>
   <body>
