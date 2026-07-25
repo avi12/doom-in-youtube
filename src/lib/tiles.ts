@@ -1,4 +1,4 @@
-const TILE_RENDERER_SELECTOR = [
+const GRID_ITEM_SELECTOR = [
   "ytd-rich-item-renderer",
   "ytd-grid-video-renderer",
   "ytd-video-renderer",
@@ -15,37 +15,42 @@ const TILE_RENDERER_SELECTOR = [
   "ytm-shorts-lockup-view-model-v2"
 ].join(", ");
 
-const THUMBNAIL_SELECTOR = [
-  "ytd-thumbnail a#thumbnail",
-  "a.reel-item-endpoint",
-  "a.shortsLockupViewModelHostEndpoint",
-  ".shortsLockupViewModelHostThumbnailContainer",
-  ".ytThumbnailViewModelHost",
-  "yt-thumbnail-view-model",
-  "yt-image img",
-  "img.yt-core-image"
-].join(", ");
-
+const THUMBNAIL_CONTAINER_SELECTOR = "yt-thumbnail-view-model, ytd-thumbnail, .ytThumbnailViewModelHost";
 const MIN_TILE_SIZE = 48;
 
-export function collectVisibleTileRects() {
-  const elRenderers = document.querySelectorAll<HTMLElement>(TILE_RENDERER_SELECTOR);
-  const elThumbnails = new Set<HTMLElement>();
+interface TilePeephole {
+  rect: DOMRect;
+  radius: number;
+}
 
-  for (const elRenderer of elRenderers) {
-    elThumbnails.add(elRenderer.querySelector<HTMLElement>(THUMBNAIL_SELECTOR) ?? elRenderer);
+export function collectVisibleTilePeepholes() {
+  const elContainers = new Set<HTMLElement>();
+  for (const elItem of document.querySelectorAll<HTMLElement>(GRID_ITEM_SELECTOR)) {
+    elContainers.add(thumbnailContainerInItem(elItem));
   }
 
-  const rects: DOMRect[] = [];
-
-  for (const elThumbnail of elThumbnails) {
-    const rect = elThumbnail.getBoundingClientRect();
+  const peepholes: TilePeephole[] = [];
+  for (const elContainer of elContainers) {
+    const rect = elContainer.getBoundingClientRect();
     if (isRenderableTile(rect)) {
-      rects.push(rect);
+      peepholes.push({
+        rect,
+        radius: readCornerRadius(elContainer)
+      });
     }
   }
 
-  return rects;
+  return peepholes;
+}
+
+function thumbnailContainerInItem(elItem: HTMLElement) {
+  const elLockup = elItem.querySelector<HTMLElement>("yt-lockup-view-model");
+  const root: HTMLElement | ShadowRoot = elLockup?.shadowRoot ?? elLockup ?? elItem;
+  return root.querySelector<HTMLElement>(THUMBNAIL_CONTAINER_SELECTOR) ?? elItem;
+}
+
+function readCornerRadius(elContainer: HTMLElement) {
+  return parseFloat(getComputedStyle(elContainer).borderTopLeftRadius) || 0;
 }
 
 function isRenderableTile(rect: DOMRect) {

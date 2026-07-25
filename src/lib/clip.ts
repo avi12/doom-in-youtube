@@ -1,6 +1,11 @@
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CLIP_ID = "doom-in-youtube-holes";
 
+interface Peephole {
+  rect: DOMRect;
+  radius: number;
+}
+
 export function createClip() {
   const elSvg = document.createElementNS(SVG_NS, "svg");
   elSvg.setAttribute("class", "doom-clip");
@@ -11,18 +16,18 @@ export function createClip() {
   elSvg.append(elClipPath);
   document.body.append(elSvg);
 
-  function update(rects: DOMRect[]) {
+  function update(peepholes: Peephole[]) {
     syncRectCount({
       elClipPath,
-      count: rects.length
+      count: peepholes.length
     });
 
     const elRects = elClipPath.children;
 
-    for (let i = 0; i < rects.length; i++) {
+    for (let i = 0; i < peepholes.length; i++) {
       applyRect({
         elRect: elRects[i],
-        rect: rects[i]
+        peephole: peepholes[i]
       });
     }
   }
@@ -50,16 +55,19 @@ function syncRectCount({ elClipPath, count }: {
   }
 }
 
-function applyRect({ elRect, rect }: {
+function applyRect({ elRect, peephole }: {
   elRect: Element | undefined;
-  rect: DOMRect | undefined;
+  peephole: Peephole | undefined;
 }) {
-  if (!elRect || !rect) {
+  if (!elRect || !peephole) {
     return;
   }
 
+  const { rect, radius } = peephole;
   elRect.setAttribute("x", `${rect.left}`);
   elRect.setAttribute("y", `${rect.top}`);
   elRect.setAttribute("width", `${rect.width}`);
   elRect.setAttribute("height", `${rect.height}`);
+  elRect.setAttribute("rx", `${radius}`);
+  elRect.setAttribute("ry", `${radius}`);
 }
