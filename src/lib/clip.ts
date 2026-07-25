@@ -1,10 +1,7 @@
+import { TilePeephole } from "@/lib/tiles";
+
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CLIP_ID = "doom-in-youtube-holes";
-
-interface Peephole {
-  rect: DOMRect;
-  radius: number;
-}
 
 export function createClip() {
   const elSvg = document.createElementNS(SVG_NS, "svg");
@@ -16,7 +13,7 @@ export function createClip() {
   elSvg.append(elClipPath);
   document.body.append(elSvg);
 
-  function update(peepholes: Peephole[]) {
+  function update(peepholes: TilePeephole[]) {
     syncRectCount({
       elClipPath,
       count: peepholes.length
@@ -57,7 +54,7 @@ function syncRectCount({ elClipPath, count }: {
 
 function applyRect({ elRect, peephole }: {
   elRect: Element | undefined;
-  peephole: Peephole | undefined;
+  peephole: TilePeephole | undefined;
 }) {
   if (!elRect || !peephole) {
     return;
