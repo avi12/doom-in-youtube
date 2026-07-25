@@ -1,6 +1,6 @@
 {
   "name": "doom-in-youtube",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Click the icon and every YouTube thumbnail becomes a peephole onto one live DOOM",
   "author": "Avi <avi6106@gmail.com>",

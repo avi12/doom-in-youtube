@@ -26,6 +26,8 @@ background service worker  --TOGGLE-->  YouTube content script
 - A **background service worker** toggles the overlay on the action click and relaxes YouTube's `frame-src` via `declarativeNetRequest` so the iframe can embed.
 - Clicking a thumbnail captures keyboard and mouse into the game; `Esc` releases them.
 
+For the projection algorithm, the stage-rect stream and the CSP handling, see [`ARCHITECTURE.md`](ARCHITECTURE.md).
+
 ## Controls
 
 - **Toolbar icon** - toggle DOOM on, then off

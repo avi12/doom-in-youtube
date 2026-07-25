@@ -5,3 +5,5 @@ build/
 stats.html
 *.log
 continue-*.md
+.idea/
+*.pem
