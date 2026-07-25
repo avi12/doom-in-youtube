@@ -1,0 +1,34 @@
+.doom-frame {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: var(--doom-width, 0px);
+  height: var(--doom-height, 0px);
+  translate: var(--doom-x, 0px) var(--doom-y, 0px);
+  border: 0;
+  z-index: 2147483647;
+  background: transparent;
+  visibility: hidden;
+  pointer-events: none;
+  clip-path: url(#doom-in-youtube-holes);
+
+  &.is-ready {
+    visibility: visible;
+  }
+
+  &.is-active {
+    pointer-events: auto;
+  }
+}
+
+.doom-clip {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+/* neutralize YouTube's native thumbnail hover preview while DOOM is on */
+html.doom-active :is(ytd-video-preview, #mouseover-overlay, ytd-moving-thumbnail-renderer) {
+  display: none !important;
+}
