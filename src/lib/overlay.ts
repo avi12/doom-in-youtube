@@ -1,23 +1,16 @@
 import { createClip } from "@/lib/clip";
 import { FrameMessage, postToFrame, readFrameMessage } from "@/lib/frame-messaging";
 import "@/lib/overlay.css";
-import { collectVisibleTileRects } from "@/lib/tiles";
+import { collectVisibleTilePeepholes } from "@/lib/tiles";
 
 const FRAME_PATH = "doom.html";
 const ROOT_ACTIVE_CLASS = "doom-active";
-
-interface Bounds {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
-}
 
 export function createOverlay() {
   let isOn = false;
   let isActive = false;
   let rafId = 0;
-  let latestRects: DOMRect[] = [];
+  let latestPeepholes: ReturnType<typeof collectVisibleTilePeepholes> = [];
 
   let clip: ReturnType<typeof createClip> | null = null;
   const elFrame = buildFrame();
@@ -94,28 +87,9 @@ export function createOverlay() {
   }
 
   function tick() {
-    latestRects = collectVisibleTileRects();
-    const bounds = computeBounds(latestRects);
-    if (bounds) {
-      positionFrame(bounds);
-      clip?.update(
-        toFrameLocalRects({
-          rects: latestRects,
-          bounds
-        })
-      );
-    } else {
-      clip?.update([]);
-    }
-
+    latestPeepholes = collectVisibleTilePeepholes();
+    clip?.update(latestPeepholes);
     rafId = requestAnimationFrame(tick);
-  }
-
-  function positionFrame({ left, top, width, height }: Bounds) {
-    elFrame.style.setProperty("--doom-x", `${left}px`);
-    elFrame.style.setProperty("--doom-y", `${top}px`);
-    elFrame.style.setProperty("--doom-width", `${width}px`);
-    elFrame.style.setProperty("--doom-height", `${height}px`);
   }
 
   function activate() {
@@ -148,7 +122,7 @@ export function createOverlay() {
     return !isActive && isPointInsideTile({
       x: e.clientX,
       y: e.clientY,
-      rects: latestRects
+      rects: latestPeepholes.map(peephole => peephole.rect)
     });
   }
 
@@ -192,38 +166,6 @@ function buildFrame() {
   elFrame.allow = "autoplay; gamepad; keyboard-map";
   elFrame.className = "doom-frame";
   return elFrame;
-}
-
-function computeBounds(rects: DOMRect[]) {
-  if (rects.length === 0) {
-    return null;
-  }
-
-  let left = Infinity;
-  let top = Infinity;
-  let right = -Infinity;
-  let bottom = -Infinity;
-
-  for (const rect of rects) {
-    left = Math.min(left, rect.left);
-    top = Math.min(top, rect.top);
-    right = Math.max(right, rect.right);
-    bottom = Math.max(bottom, rect.bottom);
-  }
-
-  return {
-    left,
-    top,
-    width: right - left,
-    height: bottom - top
-  } satisfies Bounds;
-}
-
-function toFrameLocalRects({ rects, bounds }: {
-  rects: DOMRect[];
-  bounds: Bounds;
-}) {
-  return rects.map(rect => new DOMRect(rect.left - bounds.left, rect.top - bounds.top, rect.width, rect.height));
 }
 
 function isPointInsideTile({ x, y, rects }: {

@@ -1,9 +1,8 @@
 .doom-frame {
   position: fixed;
-  inset: 0 auto auto 0;
-  width: var(--doom-width, 0px);
-  height: var(--doom-height, 0px);
-  translate: var(--doom-x, 0px) var(--doom-y, 0px);
+  inset: 0;
+  width: 100%;
+  height: 100%;
   border: 0;
   z-index: 2147483647;
   background: transparent;
@@ -28,7 +27,9 @@
   pointer-events: none;
 }
 
-/* neutralize YouTube's native thumbnail hover preview while DOOM is on */
-html.doom-active :is(ytd-video-preview, #mouseover-overlay, ytd-moving-thumbnail-renderer) {
-  display: none !important;
+html.doom-active {
+  /* neutralize YouTube's native thumbnail hover preview while DOOM is on */
+  :is(ytd-video-preview, #mouseover-overlay, ytd-moving-thumbnail-renderer) {
+    display: none !important;
+  }
 }
