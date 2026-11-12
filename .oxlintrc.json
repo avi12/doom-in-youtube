@@ -1,64 +1,40 @@
 {
   "$schema": "./node_modules/oxlint/configuration_schema.json",
-  "plugins": ["typescript", "unicorn", "oxc", "import"],
-  "categories": {
-    "correctness": "error"
-  },
+  "extends": [
+    "./node_modules/oxlint-config-avi12/oxlint.json",
+    "./node_modules/oxlint-plugin-naming/preset.json"
+  ],
   "env": {
-    "browser": true,
-    "builtin": true
+    "browser": true
   },
   "globals": {
     "browser": "readonly",
     "chrome": "readonly"
   },
   "rules": {
-    "no-void": ["error", { "allowAsStatement": true }],
-    "prefer-const": "error",
-    "no-nested-ternary": "error",
-    "curly": ["error", "all"],
-    "object-shorthand": ["error", "always", { "avoidExplicitReturnArrows": true }],
-    "id-length": ["error", {
-      "min": 3,
-      "exceptions": ["z", "_", "i", "id", "e", "x", "y", "d", "w", "h", "to", "on", "up", "ok", "T", "K", "V", "R", "n", "a", "s", "m", "t", "q", "js", "fs", "os"],
-      "properties": "never"
+    "naming/convention": ["error", {
+      "allowedNames": [
+        { "reason": "The extension manifest spells these keys in snake_case", "names": ["default_title", "host_permissions", "web_accessible_resources", "content_security_policy", "extension_pages"] },
+        { "reason": "js-dos declares its global constructor as Dos", "names": ["Dos"] },
+        { "reason": "Message names are PascalCase keys of the messaging enums", "names": ["ToggleDoom", "DoomReady"] }
+      ]
     }],
-    "func-style": ["error", "declaration", { "allowArrowFunctions": false }],
-    "arrow-body-style": ["error", "as-needed"],
-    "no-control-regex": "off",
-    "typescript/no-explicit-any": "error",
-    "typescript/no-useless-default-assignment": "off",
-    "typescript/ban-ts-comment": "error",
-    "typescript/no-floating-promises": "error",
+    "no-restricted-globals": ["error", { "name": "process", "message": "Extension code does not run under Node, read config through import.meta.env" }],
     "typescript/unbound-method": "off",
     "typescript/await-thenable": "off",
     "typescript/no-base-to-string": "off",
-    "typescript/restrict-template-expressions": "off",
-    "typescript/no-unused-vars": ["error", {
-      "varsIgnorePattern": "^_",
-      "argsIgnorePattern": "^_",
-      "caughtErrorsIgnorePattern": "^_",
-      "ignoreRestSiblings": true
-    }],
-    "typescript/consistent-type-assertions": ["error", { "assertionStyle": "never" }],
-    "import/first": "error",
-    "import/default": "off",
-    "no-restricted-globals": ["error", { "name": "process", "message": "extension/Vite code does not run under Node - read config via import.meta.env, not process" }]
+    "typescript/restrict-template-expressions": "off"
   },
   "overrides": [
     {
+      "files": ["src/entrypoints/**/*.ts"],
+      "rules": { "no-restricted-exports": "off" }
+    },
+    {
       "files": ["./scripts/*.ts", "**/*.config.ts", "**/*.config.js", "**/*.config.mjs"],
       "env": { "node": true },
-      "rules": {
-        "no-restricted-globals": "off"
-      }
+      "rules": { "no-restricted-globals": "off" }
     }
   ],
-  "ignorePatterns": [
-    "build/**",
-    "node_modules/**",
-    ".output/**",
-    ".wxt/**",
-    "src/public/**"
-  ]
+  "ignorePatterns": [".output/**", ".wxt/**", "src/public/**"]
 }
