@@ -63,13 +63,13 @@ export function onStageState({ handler, allowedOrigin }: {
   handler: (state: StageState) => void;
   allowedOrigin: string;
 }) {
-  function listener(e: MessageEvent) {
-    const isStageState = e.origin === allowedOrigin && e.data?.type === STAGE_STATE_TYPE;
+  function listener(event: MessageEvent) {
+    const isStageState = event.origin === allowedOrigin && event.data?.type === STAGE_STATE_TYPE;
     if (!isStageState) {
       return;
     }
 
-    handler(e.data.state);
+    handler(event.data.state);
   }
 
   addEventListener("message", listener);

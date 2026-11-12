@@ -1,10 +1,12 @@
 import { syncClipRects } from "@/lib/clip";
+import type {
+  StageRect,
+  StageState
+} from "@/lib/frame-messaging";
 import {
   FrameMessage,
   onStageState,
-  sendFrameMessage,
-  StageRect,
-  StageState
+  sendFrameMessage
 } from "@/lib/frame-messaging";
 
 const PARENT_ORIGIN = "https://www.youtube.com";
@@ -94,7 +96,8 @@ function syncStageClip({ elClipPath, state }: {
 }
 
 function notifyReady() {
-  if (parent === self) {
+  const isTopFrame = parent === self;
+  if (isTopFrame) {
     return;
   }
 

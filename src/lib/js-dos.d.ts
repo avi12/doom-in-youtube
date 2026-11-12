@@ -15,5 +15,5 @@ export interface DosProps {
 }
 
 declare global {
-  function Dos(element: HTMLElement, options: Partial<DosOptions>): DosProps;
+  const Dos: (element: HTMLElement, options: Partial<DosOptions>) => DosProps;
 }

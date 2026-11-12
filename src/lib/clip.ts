@@ -1,5 +1,5 @@
-import { StagePeephole } from "@/lib/frame-messaging";
-import { TilePeephole } from "@/lib/tiles";
+import type { StagePeephole } from "@/lib/frame-messaging";
+import type { TilePeephole } from "@/lib/tiles";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CLIP_ID = "doom-in-youtube-holes";
@@ -64,7 +64,8 @@ function applyRect({ elRect, rect }: {
   elRect: Element | undefined;
   rect: StagePeephole | undefined;
 }) {
-  if (!elRect || !rect) {
+  const isMissing = !elRect || !rect;
+  if (isMissing) {
     return;
   }
 

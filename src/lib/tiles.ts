@@ -22,7 +22,10 @@ const TOP_CHROME_SELECTOR = "#masthead-container, #chips-wrapper";
 const SHORTS_ITEM_SELECTOR = "ytm-shorts-lockup-view-model, ytm-shorts-lockup-view-model-v2, ytd-reel-item-renderer";
 const SHORTS_SHELF_SELECTOR = "ytd-rich-shelf-renderer[is-shorts], ytd-reel-shelf-renderer, grid-shelf-view-model";
 const MIN_TILE_SIZE = 48;
-const FRAME_ASPECT = 4 / 3;
+const FRAME_ASPECT_WIDTH = 4;
+const FRAME_ASPECT_HEIGHT = 3;
+const FRAME_ASPECT = FRAME_ASPECT_WIDTH / FRAME_ASPECT_HEIGHT;
+const PERCENT = 100;
 
 export interface TilePeephole {
   rect: DOMRect;
@@ -57,7 +60,7 @@ export interface DoomProjection {
 // The box's WIDTH comes from the regular thumbnails only - a wide Shorts shelf must not stretch the
 // frame across a narrow result/channel column - while its HEIGHT spans every thumbnail, so Shorts
 // rows above and below a video row still enlarge the frame on the home grid.
-export function collectDoomProjection(): DoomProjection | null {
+export function collectDoomProjection() {
   const seenContainers = new Set<HTMLElement>();
   const topInset = readTopChromeInset();
   const tiles: CandidateTile[] = [];
@@ -149,8 +152,9 @@ function isShortsItem(elItem: HTMLElement) {
 function computeFrame({ tiles, topInset }: {
   tiles: CandidateTile[];
   topInset: number;
-}): FrameRect | null {
-  if (tiles.length === 0) {
+}) {
+  const hasNoTiles = tiles.length === 0;
+  if (hasNoTiles) {
     return null;
   }
 
@@ -162,7 +166,8 @@ function computeFrame({ tiles, topInset }: {
 
   let width = right - left;
   let height = width / FRAME_ASPECT;
-  if (height > fullVertical.bottom - fullVertical.top) {
+  const isTooTall = height > fullVertical.bottom - fullVertical.top;
+  if (isTooTall) {
     height = fullVertical.bottom - fullVertical.top;
     width = height * FRAME_ASPECT;
   }
@@ -170,7 +175,11 @@ function computeFrame({ tiles, topInset }: {
   const viewportCenterY = (topInset + innerHeight) / 2;
   return {
     left: (left + right) / 2 - width / 2,
-    top: clamp(viewportCenterY - height / 2, fullVertical.top, fullVertical.bottom - height),
+    top: clamp({
+      value: viewportCenterY - height / 2,
+      min: fullVertical.top,
+      max: fullVertical.bottom - height
+    }),
     width,
     height
   };
@@ -204,7 +213,11 @@ function verticalBounds(tiles: CandidateTile[]) {
   };
 }
 
-function clamp(value: number, min: number, max: number) {
+function clamp({ value, min, max }: {
+  value: number;
+  min: number;
+  max: number;
+}) {
   return Math.min(Math.max(value, min), max);
 }
 
@@ -213,7 +226,8 @@ function clamp(value: number, min: number, max: number) {
 function readTopChromeInset() {
   let inset = 0;
   for (const elChrome of document.querySelectorAll<HTMLElement>(TOP_CHROME_SELECTOR)) {
-    if (getComputedStyle(elChrome).position !== "fixed") {
+    const isFixed = getComputedStyle(elChrome).position === "fixed";
+    if (!isFixed) {
       continue;
     }
 
@@ -232,13 +246,14 @@ function thumbnailContainerInItem(elItem: HTMLElement) {
 function readCornerRadius(elContainer: HTMLElement) {
   const { borderTopLeftRadius } = getComputedStyle(elContainer);
   const radius = parseFloat(borderTopLeftRadius) || 0;
-  if (!borderTopLeftRadius.endsWith("%")) {
+  const isPercentage = borderTopLeftRadius.endsWith("%");
+  if (!isPercentage) {
     return radius;
   }
 
   // A percentage radius (channel avatars use 50%) resolves against the box, giving a true circle.
   const rect = elContainer.getBoundingClientRect();
-  return radius / 100 * Math.min(rect.width, rect.height);
+  return radius / PERCENT * Math.min(rect.width, rect.height);
 }
 
 function isRealThumbnail(rect: DOMRect) {
@@ -256,7 +271,8 @@ function clipToViewport({ rect, topInset }: {
   const top = Math.max(rect.top, topInset);
   const right = Math.min(rect.right, innerWidth);
   const bottom = Math.min(rect.bottom, innerHeight);
-  if (right <= left || bottom <= top) {
+  const isEmpty = right <= left || bottom <= top;
+  if (isEmpty) {
     return null;
   }
 

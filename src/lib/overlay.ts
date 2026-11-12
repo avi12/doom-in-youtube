@@ -1,7 +1,8 @@
 import { createClip } from "@/lib/clip";
 import { FrameMessage, onFrameMessage, removeAllFrameListeners, sendStageState } from "@/lib/frame-messaging";
 import "@/lib/overlay.css";
-import { collectDoomProjection, DoomProjection } from "@/lib/tiles";
+import type { DoomProjection } from "@/lib/tiles";
+import { collectDoomProjection } from "@/lib/tiles";
 
 const FRAME_PATH = "doom.html";
 const ROOT_ACTIVE_CLASS = "doom-active";
@@ -64,7 +65,8 @@ export function createOverlay() {
   // canvas from the inside; the peepholes shift every frame on scroll, so this fires each tick
   function syncStage(projection: DoomProjection | null) {
     const targetWindow = elFrame.contentWindow;
-    if (!projection || !targetWindow) {
+    const isUnavailable = !projection || !targetWindow;
+    if (isUnavailable) {
       return;
     }
 

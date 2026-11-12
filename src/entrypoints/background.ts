@@ -20,10 +20,11 @@ async function toggleDoom(tabId: number) {
 
 export default defineBackground(() => {
   browser.action.onClicked.addListener(tab => {
-    if (tab.id === undefined) {
+    const { id: tabId } = tab;
+    if (!tabId) {
       return;
     }
 
-    toggleDoom(tab.id).catch(() => {});
+    toggleDoom(tabId).catch(() => {});
   });
 });
