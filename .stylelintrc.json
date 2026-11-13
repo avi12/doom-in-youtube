@@ -1,4 +1,12 @@
 {
   "extends": ["stylelint-config-avi12"],
-  "ignoreFiles": [".output/**", ".wxt/**", "src/public/vendor/**"]
+  "ignoreFiles": [".output/**", ".wxt/**", "src/public/vendor/**"],
+  "overrides": [
+    {
+      "files": ["src/entrypoints/doom/index.html"],
+      "rules": {
+        "declaration-no-important": null
+      }
+    }
+  ]
 }

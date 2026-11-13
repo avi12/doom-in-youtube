@@ -10,11 +10,11 @@
     <style>
       html,
       body {
-        margin: 0;
+        overflow: hidden;
         width: 100%;
         height: 100%;
-        overflow: hidden;
-        background: #000;
+        margin: 0;
+        background: #000000;
       }
 
       #stage {
@@ -26,16 +26,16 @@
         & canvas {
           position: absolute !important;
           inset: 0 !important;
+          object-fit: fill !important;
           width: 100% !important;
           height: 100% !important;
-          object-fit: fill !important;
           image-rendering: pixelated;
         }
       }
 
       /* js-dos overlays its on-screen touch controls and settings sidebar on top of the canvas;
          they are useless here and their white graphics bleed through the thumbnail peepholes */
-      main.jsdos-rso :is(.sidebar-slider, .touch) {
+      #stage.jsdos-rso :is(.sidebar-slider, .touch) {
         display: none !important;
       }
     </style>
