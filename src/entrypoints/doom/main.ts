@@ -12,6 +12,7 @@ import {
 const PARENT_ORIGIN = "https://www.youtube.com";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const STAGE_CLIP_ID = "doom-stage-peepholes";
+const DEFAULT_VOLUME = 0.6;
 
 function bootDoom() {
   const elStage = document.querySelector<HTMLElement>("#stage");
@@ -42,7 +43,7 @@ function bootDoom() {
     autoStart: true,
     mouseCapture: true,
     noCloud: true,
-    volume: 0.6
+    volume: DEFAULT_VOLUME
   });
 
   notifyReady();
