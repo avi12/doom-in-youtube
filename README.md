@@ -53,7 +53,7 @@ pnpm ext:dev:edge   # ...on Edge
 Then load the extension from the dev server, open `youtube.com`, and click the toolbar icon.
 
 ```bash
-pnpm lint    # oxlint (type-aware) + eslint, both --fix
+pnpm lint    # oxlint (type-aware), --fix
 pnpm check   # tsgo --noEmit
 pnpm ext:build
 ```

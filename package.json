@@ -29,7 +29,7 @@
     "ext:dev:edge": "wxt -b edge",
     "ext:build": "wxt build",
     "ext:zip": "wxt zip",
-    "lint": "eslint --concurrency 2 --cache --cache-location node_modules/.cache/eslint/ --fix && oxlint --type-aware --fix",
+    "lint": "oxlint --type-aware --fix",
     "stylelint": "stylelint \"**/*.css\" --fix",
     "fallow": "fallow audit --base HEAD",
     "check": "tsgo --noEmit",
@@ -39,32 +39,29 @@
     "@types/chrome": "^0.2.2",
     "@types/node": "^26.1.0",
     "@typescript/native-preview": "7.0.0-dev.20260707.2",
-    "eslint": "^10.6.0",
-    "eslint-config-avi12": "github:avi12/lint-config#v0.1.2&path:/packages/eslint-config",
     "fallow": "2.103.0",
-    "fallow-config-avi12": "github:avi12/lint-config#v0.1.2&path:/packages/fallow-config",
+    "fallow-config-avi12": "github:avi12/lint-config#v0.4.3&path:/packages/fallow-config",
     "oxlint": "1.72.0",
-    "oxlint-config-avi12": "github:avi12/lint-config#v0.1.2&path:/packages/oxlint-config",
-    "oxlint-plugin-naming": "github:avi12/lint-config#v0.1.2&path:/packages/oxlint-plugin-naming",
+    "oxlint-config-avi12": "github:avi12/lint-config#v0.4.3&path:/packages/oxlint-config",
+    "oxlint-plugin-naming": "github:avi12/lint-config#v0.4.3&path:/packages/oxlint-plugin-naming",
     "oxlint-tsgolint": "0.24.0",
     "postcss-html": "^1.8.1",
     "stylelint": "^17.14.1",
-    "stylelint-config-avi12": "github:avi12/lint-config#v0.1.2&path:/packages/stylelint-config",
+    "stylelint-config-avi12": "github:avi12/lint-config#v0.4.3&path:/packages/stylelint-config",
     "typescript": "6.0.3",
     "web-ext-run": "^0.2.4",
     "wxt": "^0.20.27"
   },
+  "packageManager": "pnpm@11.1.2",
+  "dependencies": {
+    "@webext-core/messaging": "^3.0.2"
+  },
   "lint-staged": {
     "*.ts": [
-      "oxlint --fix",
-      "eslint --fix"
+      "oxlint --fix"
     ],
     "*.css": [
       "stylelint --fix"
     ]
-  },
-  "packageManager": "pnpm@11.1.2",
-  "dependencies": {
-    "@webext-core/messaging": "^3.0.2"
   }
 }

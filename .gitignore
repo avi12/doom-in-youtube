@@ -7,3 +7,4 @@ stats.html
 continue-*.md
 .idea/
 *.pem
+.verify/

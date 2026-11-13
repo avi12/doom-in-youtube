@@ -24,7 +24,7 @@ governs its WASM. A background service worker toggles it on the action click and
   For a real, non-trivial concern (e.g. typed cross-context messaging via `@webext-core/messaging`),
   a well-scoped dependency is fine
 - Vendored js-dos is committed and reviewable under `src/public/vendor`. devDependencies are the
-  build/lint toolchain (wxt, oxlint, eslint, fallow, tsgo)
+  build/lint toolchain (wxt, oxlint, fallow, tsgo)
 - Never add a dependency for something a few lines of code can do
 
 # Code style
@@ -80,7 +80,7 @@ governs its WASM. A background service worker toggles it on the action click and
 
 # Linting
 After completing a bug fix, feature, or refactor, run the full linter suite - never skip one:
-- `pnpm lint` runs `oxlint --type-aware --fix && eslint --fix` - oxlint owns logic/type-aware
+- `pnpm lint` runs `oxlint --type-aware --fix` - oxlint owns logic/type-aware
   rules, ESLint owns the stylistic ones; always run with `--fix`
 - `pnpm stylelint` runs `stylelint "**/*.css" --fix` for any CSS change - config extends
   `stylelint-config-ccb` (shared with youtube-time-manager), pinned deps in devDependencies
